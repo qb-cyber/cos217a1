@@ -7,7 +7,7 @@ enum State {NORMAL, SLASH, COMMENT, STAR, STRING, CHAR_LITERAL, ESCAPE_STRING, E
 int main(void) {
     int c;
     int line = 1;
-    int start_line = 0;
+    int start = 0;
     enum State state = NORMAL;
 
     while ((c = getchar()) != EOF) {
@@ -25,9 +25,9 @@ int main(void) {
                 if (c == '*') {
                     state = COMMENT;
                     if (c == '\n') {
-                        start_line = line - 1;
+                        start = line - 1;
                     } else {
-                        start_line = line;
+                        start = line;
                     }
                     putchar(' '); 
                 } else if (c == '/') {
@@ -78,7 +78,7 @@ int main(void) {
     }
 
     if (state == COMMENT || state == STAR) {
-        fprintf(stderr, "Error: line %d: unterminated comment\n", start_line);
+        fprintf(stderr, "Error: line %d: unterminated comment\n", start);
         return EXIT_FAILURE;
     }
 
