@@ -24,10 +24,14 @@ int main(void) {
             case SLASH:
                 if (c == '*') {
                     state = COMMENT;
-                    start_line = (c == '\n') ? line - 1 : line;
-                    putchar(' '); /* Replace comment with a space */
+                    if (c == '\n') {
+                        start_line = line - 1;
+                    } else {
+                        start_line = line;
+                    }
+                    putchar(' '); 
                 } else if (c == '/') {
-                    putchar('/'); /* Stay in SLASH state essentially */
+                    putchar('/'); 
                 } else if (c == '\"') {
                     putchar('/'); putchar('\"'); state = STRING;
                 } else if (c == '\'') {
@@ -39,7 +43,7 @@ int main(void) {
 
             case COMMENT:
                 if (c == '*') state = STAR;
-                else if (c == '\n') putchar('\n'); /* Keep line sync */
+                else if (c == '\n') putchar('\n');
                 break;
 
             case STAR:
@@ -73,13 +77,11 @@ int main(void) {
         }
     }
 
-    /* Error Handling for Unterminated Comments */
     if (state == COMMENT || state == STAR) {
         fprintf(stderr, "Error: line %d: unterminated comment\n", start_line);
         return EXIT_FAILURE;
     }
 
-    /* Handle trailing slash */
     if (state == SLASH) putchar('/');
 
     return EXIT_SUCCESS;
