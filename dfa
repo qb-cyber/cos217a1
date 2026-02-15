@@ -1,0 +1,53 @@
+------------------------------------------------------------------------
+Textual representation of the De-comment DFA
+------------------------------------------------------------------------
+
+NORMAL (start/printing)
+    / : SLASH (don't print yet)
+    " : STRING (print ")
+    ' : CHAR_LITERAL (print ')
+    \n: NORMAL (print \n, increment line)
+    other: NORMAL (print char)
+
+SLASH (printing)
+    * : COMMENT (print space, set start_line = line)
+    / : SLASH (print /)
+    " : STRING (print /, print ")
+    ' : CHAR_LITERAL (print /, print ')
+    \n: NORMAL (print /, print \n, increment line)
+    other: NORMAL (print /, print char)
+
+COMMENT (non-printing)
+    * : STAR
+    \n: COMMENT (print \n, increment line)
+    other: COMMENT (don't print)
+
+STAR (non-printing)
+    / : NORMAL
+    * : STAR
+    \n: COMMENT (print \n, increment line)
+    other: COMMENT (don't print)
+
+STRING (printing)
+    \ : ESCAPE_STRING (print \)
+    " : NORMAL (print ")
+    \n: NORMAL (print \n, increment line)
+    other: STRING (print char)
+
+ESCAPE_STRING (printing)
+    other: STRING (print char, handles \" and \\)
+
+CHAR_LITERAL (printing)
+    \ : ESCAPE_CHAR (print \)
+    ' : NORMAL (print ')
+    \n: NORMAL (print \n, increment line)
+    other: CHAR_LITERAL (print char)
+
+ESCAPE_CHAR (printing)
+    other: CHAR_LITERAL (print char, handles \' and \\)
+
+------------------------------------------------------------------------
+Notes:
+- If EOF is reached in state COMMENT or STAR: Error (Unterminated).
+- If EOF is reached in state SLASH: Print '/' then Exit.
+------------------------------------------------------------------------
